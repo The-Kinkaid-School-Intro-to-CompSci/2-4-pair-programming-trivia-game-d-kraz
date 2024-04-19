@@ -180,18 +180,18 @@ function displayQuestions(questions){
     let questionsContainer = document.querySelector('#questionCards');
     //clear the questions container
     ////Step 3C : Uncomment to clear the questions container
-    // clearContainer(questionsContainer);
-
+    clearContainer(questionsContainer);
+    // let question = questions[0];
     //create a card for a single question for testing
-    let question = questions[0];
-    let questionCard = createQuestionCard(question);
     //append the question card to the questionsContainer
-    questionsContainer.appendChild(questionCard);
 
     //Step 3C 
     //loop through the questions and create a question card for each
     //append each card to the questionsContainer
-    
+    for(let question of questions){
+        let questionCard = createQuestionCard(question);
+        questionsContainer.appendChild(questionCard);
+    }
 }
 
 function handleQuestionSubmit(event){
@@ -246,6 +246,20 @@ function createQuestionCard(question){
     //Step 6
     //Step 3A: Create the header of the card
     console.log(question);
+    let questionCardHeader = document.createElement('div');
+    let title = document.createElement('h5');
+    title.textContent = question.question;
+    title.classList.add(`card-title`);
+    questionCardHeader.appendChild(title);
+    let subtitle = document.createElement('p');
+    subtitle.textContent = question.category;
+    questionCardHeader.appendChild(subtitle);
+    questionCard.appendChild(questionCardHeader);
+    questionCardHeader.classList.add('card-header');
+    subtitle.classList.add(`card-subtitle`);
+
+
+
     //create a header (div element) with class card-header
 
     //create an title (h5 element) with the class card-title
@@ -279,7 +293,10 @@ function createQuestionCard(question){
 
     //Part 3B: 
     //for each incorrect answer, make an input with type radio and class form-check input, call the function createFormCheckInput
-    
+    for(let incorrectAnswer of question.incorrect_answers){
+        let incorrectAnswerFormCheck = createFormCheckInput(question, false, incorrectAnswer);
+        cardBody.appendChild(incorrectAnswerFormCheck);
+    }
 
     //append the cardBody to the form
     form.appendChild(cardBody);
@@ -327,18 +344,27 @@ function createQuestionCard(question){
  */
 async function getQuestions(){
     console.log("Fetching questions from the API");
-    const baseURL = 'https://opentdb.com/api.php?amount=1';
+    const baseURL = 'https://opentdb.com/api.php?';
     
     //Step 1: get the user input (number of questions to get)
     //get the number of questions to fetch from the user input
 
-    //update the totalQuestions variable
+    let numberOfQuestionsInput = document.querySelector('#numberOfQuestions');
+    let numQuestions = numberOfQuestionsInput.value;
+    let numQuestionsString = `amount=${numQuestions}`;
 
+
+    //update the totalQuestions variable
+    totalQuestions = Number(numQuestions);
     //Step 2: get the user input (category)
+
+    let categorySelect = document.querySelector('#categorySelect');
+    let category = categorySelect.value;
+    let categoryString = `&category=${category}`;
 
 
     //build the full URL
-    const fullURL = `${baseURL}`;
+    const fullURL = `${baseURL}${numQuestionsString}${categoryString}`;
     console.log("Full URL: ", fullURL);
     //make the fetch request
     const response = await fetch(fullURL);
